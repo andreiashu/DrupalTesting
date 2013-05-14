@@ -65,11 +65,6 @@ class DrupalBootstrap
 
     $_SERVER = $_SERVER + $defaults;
 
-    // change current directory
-    // we do this because settings.php can potentially require files that are
-    // referenced by a path relative to Drupal's root
-    chdir(DRUPAL_ROOT);
-
     require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
     require_once DRUPAL_ROOT . '/includes/entity.inc';
     require_once DRUPAL_ROOT . '/includes/common.inc';
