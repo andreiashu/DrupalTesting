@@ -66,6 +66,7 @@ class DrupalDBSqliteHelper {
     }
 
     $db_info = self::getHandlerDBInfo($handler_name);
+    db_close(array('target' => 'default'));
     unlink($db_info['database']);
     unset(self::$handlers[$handler_name]);
   }
