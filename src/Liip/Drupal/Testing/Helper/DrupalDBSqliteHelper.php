@@ -29,7 +29,7 @@ class DrupalDBSqliteHelper {
    */
   public static function activate($handler_name = NULL, $options = array()) {
     if (empty($handler_name)) {
-      $handler_name = 'SqlLite';
+      $handler_name = uniqid('', TRUE);
     }
 
     if (!isset(self::$handlers[$handler_name])) {
