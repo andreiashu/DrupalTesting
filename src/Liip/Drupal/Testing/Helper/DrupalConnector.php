@@ -12,6 +12,14 @@ namespace Liip\Drupal\Testing\Helper;
  */
 class DrupalConnector {
 
+    /**
+     * Flag which will be set to TRUE if the cache backend has been swapped with
+     * the custom in-memory one
+     *
+     * @var bool
+     */
+    protected $customCacheEnabled = FALSE;
+
     public function arg($index = NULL, $path = NULL) {
         return arg($index, $path);
     }
@@ -90,12 +98,14 @@ class DrupalConnector {
    */
   public function drupal_swap_cache_backend() {
       global $conf;
-      $this->drupal_bootstrap(DRUPAL_BOOTSTRAP_CONFIGURATION);
+
+      // Bootstrapping Drupal is not needed here
+      // $this->drupal_bootstrap(DRUPAL_BOOTSTRAP_CONFIGURATION);
       // cannot use cache_backends variable because it is
       // relative to DRUPAL_ROOT - @see _drupal_bootstrap_page_cache()
       require_once DRUPAL_ROOT . '/includes/cache.inc';
       require_once __DIR__ . '/DrupalInMemoryCache.php';
-      $conf['cache_default_class'] = 'DrupalInMemoryCache';
+      $conf['cache_default_class'] = '\Liip\Drupal\Testing\Helper\DrupalInMemoryCache';
       unset($conf['cache_backends']);
       // remove any bin specific cache class
       foreach($conf as $key => $value) {
@@ -103,8 +113,21 @@ class DrupalConnector {
           unset($conf[$key]);
         }
       }
+
+      $this->customCacheEnabled = TRUE;
     }
 
+    /**
+     * @return bool
+     */
+    public function hasCustomCacheEnabled() {
+      return DrupalInMemoryCache::isActive();
+    }
+
+    /**
+     * @param null $phase
+     * @param bool $new_phase
+     */
     public function drupal_bootstrap($phase = NULL, $new_phase = TRUE) {
         // change current directory
         // we do this because settings.php can potentially require files that are
@@ -158,6 +181,11 @@ class DrupalConnector {
     public function &drupal_static($name, $default_value = NULL, $reset = FALSE) {
         $static = &drupal_static($name, $default_value, $reset);
         return $static;
+    }
+
+    public function drupal_static_reset($name = NULL)
+    {
+        return drupal_static_reset($name);
     }
 
     public function drupal_unpack($obj, $field = 'data') {
