@@ -99,8 +99,9 @@ class DrupalConnector {
   public function drupal_swap_cache_backend() {
       global $conf;
 
-      // Bootstrapping Drupal is not needed here
-      // $this->drupal_bootstrap(DRUPAL_BOOTSTRAP_CONFIGURATION);
+      // Bootstrapping Drupal is actually NEEDED here - otherwise tests that require
+      // .module files will stop working
+      $this->drupal_bootstrap(DRUPAL_BOOTSTRAP_CONFIGURATION);
       // cannot use cache_backends variable because it is
       // relative to DRUPAL_ROOT - @see _drupal_bootstrap_page_cache()
       require_once DRUPAL_ROOT . '/includes/cache.inc';
